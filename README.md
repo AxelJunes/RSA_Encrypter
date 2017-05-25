@@ -3,4 +3,4 @@
 
 
 
-# Microservice done with python to encrypt and decrypt texts #
+## Microservice done with Flask to encrypt/decrypt texts ##
