@@ -1,0 +1,28 @@
+.jumbotron{
+  margin-top: 200px;
+}
+
+.img-rsa{
+  margin: 10px;
+  width: 400px;
+}
+
+.input{
+  height: 45px;
+}
+
+.form-inline .form-group .text {
+    width:500px;
+}
+
+@media (max-width: 768px) {
+  .form-inline .form-group .text {
+      width: 100%;
+  }
+}
+
+@media (max-width: 992px) {
+  .form-inline .btn, .form-inline .form-group .key {
+      margin-top: 20px;
+  }
+}

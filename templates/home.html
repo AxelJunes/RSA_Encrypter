@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/style.css') }}">
+  </head>
+  <body>
+    <div class="container">
+      <div class="jumbotron">
+        <img class="img-responsive img-rsa" src="{{ url_for('static',filename='img/logo.png') }}">
+        <br><br>
+        <form class="form-inline" action="/" method="POST">
+          <div class="form-group">
+           <input type="text" class="form-control text input" name="text" placeholder="Write something" autofocus required>
+          </div>
+          <div class="form-group">
+            <input type="number" class="form-control key input" name="key" min="0" max="1024" placeholder="Key length (1-1024)" required>
+          </div>
+          <input class="btn btn-danger btn-lg" type="submit" value="Encrypt"></input>
+        </form>
+      </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static',filename='js/checkbox.js') }}"></script>
+  </body>
+</html>
