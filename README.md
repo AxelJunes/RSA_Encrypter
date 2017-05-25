@@ -3,4 +3,4 @@
 
 
 
-## Microservice done with Flask to encrypt/decrypt texts ##
+## Microservice done with Flask to encrypt/decrypt texts with Vigenère cipher and RSA ##
