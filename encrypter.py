@@ -6,7 +6,7 @@
 ####################################################################################
 
 from flask import Flask, render_template, request, redirect, url_for
-from math import sqrt, floor, pow # Square root
+from math import floor, pow # Square root
 from random import random
 import sympy # Library for primality test
 
@@ -20,6 +20,9 @@ ciphered_message = ""
 deciphered_message = ""
 encrypted_message = ""
 decrypted_message = ""
+encrypted_msg = []
+public_key = 0
+private_key = 0
 
 
 
@@ -57,10 +60,15 @@ def decrypt():
     global encrypted_message
     global decrypted_message
 
+    # Format the messages so that they appear correctly on screen
+    ciph_msg = " ".join(ciphered_message)
+    rsa_msg = " ".join(encrypted_message)
+    dec_msg = " ".join(decrypted_message)
+
     if request.method == "GET":
-        return render_template("encrypted.html", ciphered = ciphered_message, encrypted = encrypted_message)
+        return render_template("encrypted.html", ciphered = ciph_msg, encrypted = rsa_msg)
     if request.method == "POST":
-        return render_template("decrypted.html", decipher = deciphered_message, decrypted = decrypted_message)
+        return render_template("decrypted.html", decrypted = dec_msg, deciphered = deciphered_message)
 
 #-----------------------------------------------------------------------------------
 #                                  ENCRYPTION
@@ -71,43 +79,62 @@ def execute(msg, Charset, seed, n):
     global deciphered_message
     global encrypted_message
     global decrypted_message
-    public_key = ""
-    private_key = ""
+    global public_key
+    global private_key
 
     # Cast to Integer
     n = int(n)
+
+    #If n is odd
+    if n % 2 != 0:
+        n += 1
+
     # Calculate two strong prime numbers
-    lim_superior = int(pow(2, n/2-1))
-    lim_inferior = int(pow(2, (n-1)/2-1))
+    lim_superior = int(pow(2, (n+1)/2))
+    lim_inferior = int(pow(2, n/2-1))
 
-    primo1 = int(floor(random()*((lim_superior - lim_inferior) + 1) + lim_inferior))
-    while sympy.isprime(primo1) == False or primo1 % 2 != 1:
-        primo1 = int(floor(random()*((lim_superior - lim_inferior) + 1) + lim_inferior))
+    primo_seguro1 = 2
+    primo_seguro2 = 2
+    primo1 = 4
+    primo2 = 4
 
-    primo2 = int(floor(random()*((lim_superior - lim_inferior) + 1) + lim_inferior))
-    while sympy.isprime(primo2) == False or primo2 % 2 != 1 or primo1 == primo2:
-        primo2 = int(floor(random()*((lim_superior - lim_inferior) + 1) + lim_inferior))
+    while not sympy.isprime(primo1) or not sympy.isprime(primo_seguro1) or primo_seguro1 == primo_seguro2:
+        primo1 = int(floor(random() * ((lim_superior - lim_inferior) + 1) + lim_inferior))
+        if sympy.isprime(primo1):
+            primo_seguro1 = 2 * primo1 + 1
+            if not sympy.isprime(primo_seguro1):
+                primo1 = int(floor(random() * ((lim_superior - lim_inferior) + 1) + lim_inferior))
 
-    primoSeguro1 = 2 * primo1 + 1
-    primoSeguro2 = 2 * primo2 + 1
-    modN = primoSeguro1 + primoSeguro2
+    lim_superior = int(pow(2, (n - 1) / 2))
+    lim_inferior = int(pow(2, (n - 2)/ 2 - 1))
+    while not sympy.isprime(primo2) or not sympy.isprime(primo_seguro2) or primo_seguro1 == primo_seguro2:
+        primo2 = int(floor(random() * ((lim_superior - lim_inferior) + 1) + lim_inferior))
+        if sympy.isprime(primo2):
+            primo_seguro2 = 2 * primo2 + 1
+            if not sympy.isprime(primo_seguro2):
+                primo2 = int(floor(random() * ((lim_superior - lim_inferior) + 1) + lim_inferior))
+
+    mod_n = primo_seguro1 * primo_seguro2
 
     # Vigenère cipher
     ciphered_message = encrypt_vigenere(msg, Charset, seed)
-    key_public(modN, primoSeguro1, primoSeguro2, public_key, private_key)
+
+    key_public(primo_seguro1, primo_seguro2)
 
     # RSA encryption
-    encrypted_message = encrypt_rsa(ciphered_message, modN, public_key)
+    encrypted_message = encrypt_rsa(ciphered_message,mod_n)
 
     # RSA decryption
-    decrypted_message = decrypt_rsa(encrypted_message, modN, private_key)
+    decrypted_message = decrypt_rsa(mod_n)
 
     # Vigenère decipher
     deciphered_message = decrypt_vigenere(decrypted_message, Charset, seed, msg)
 
-#-----------------------------------------------------------------------------------
-#                                  VIGENÈRE
-#-----------------------------------------------------------------------------------
+
+
+
+
+# VIGENÈRE
 
 def intercambia(texto_plano):
     invertida = ""
@@ -142,33 +169,36 @@ def decrypt_vigenere(cifrado, Charset, Seed, Txt):
     c = 0
     while n < len(cifrado):
         if Charset.index(cifrado[n]) != -1:
-            tmp = Charset.index(cifrado[n]) - Charset.index(Seed[n])
+            tmp = (Charset.index(cifrado[n]) - Charset.index(Seed[n])) % len(Charset)
             if tmp < 0:
                 tmp = tmp + len(Charset)
             descifrado = descifrado + Charset[tmp]
         else:
             c -= 1
-            descifrado = descifrado + Txt[n];
+            descifrado = descifrado + Txt[n]
         # Iterate
         n += 1
         c = (c + 1) % len(Seed)
     return descifrado
 
-#-----------------------------------------------------------------------------------
-#                                      RSA
-#-----------------------------------------------------------------------------------
+
+
+
+# RSA
 
 # Generate public and private keys
 # Store all possible values in array
-def key_public(n, p, q, public_key, private_key):
-    inverse = 0
+def key_public(p, q):
+    global public_key
+    global private_key
+
     phi = (p-1) * (q-1)
-    e = 0
-    i = 3 # While loop counter
+    i = 3  # While loop counter
     while i < phi-1:
         if phi % i == 0:
+            i += 1
             continue
-        if sympy.isprime(i) and (i != p) and (i != q):
+        if phi % i == 1 and i != p and i != q:
             e = i
             inverse = key_private(e, phi)
             if inverse > private_key:
@@ -180,35 +210,44 @@ def key_public(n, p, q, public_key, private_key):
 def key_private(x, phi):
     k = 1
     while True:
-        k += phi
+        k = k + phi
         if k % x == 0:
             return k / x
 
 # RSA encryption
-def encrypt_rsa(msg, n, public_key):
+def encrypt_rsa(msg, n):
+    global public_key
+    global encrypted_msg
     key = public_key
+    #encrypted_msg.append(0);
     i = 0
+    encrypted = ""
     while(i < len(msg)):
         pt = Charset.index(msg[i])
         k = 1
-        j = 0 # While loop counter
+        j = 0  # While loop counter
         while j < key:
             k = k * pt
             k = k % n
             # Iterate
             j += 1
-        encrypted_message[i] = k
+        encrypted_msg.append(k)
+        encrypted += str(k)
         # Iterate
         i += 1
     # Encrypted message is each element of "m" encrypted
-    return ''.join(encrypted_message)
+    return encrypted
 
 # RSA decryption
-def decrypt_rsa(cadena, n, private_key):
+def decrypt_rsa(n):
+    global private_key
+    global encrypted_msg
+
     key = private_key
+    decrypted = ""
     i = 0
-    while i < len(cadena):
-        ct = cadena[i]
+    while i < len(encrypted_msg):
+        ct = encrypted_msg[i]
         k = 1
         j = 0 # While loop counter
         while j < key:
@@ -216,11 +255,10 @@ def decrypt_rsa(cadena, n, private_key):
             k = k % n
             # Iterate
             j += 1
-        decrypted_message = decrypted_message + Charset[k]
+        decrypted += Charset[k]
         # Iterate
         i += 1
-    return decrypted_message
-
+    return decrypted
 
 #-----------------------------------------------------------------------------------
 #                                      MAIN

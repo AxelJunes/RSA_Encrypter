@@ -1,18 +1,23 @@
-.jumbotron{
+.jumbotron {
   margin-top: 200px;
 }
 
-.img-rsa{
+.img-rsa {
   margin: 10px;
   width: 400px;
 }
 
-.input{
+.input {
   height: 45px;
 }
 
 .form-inline .form-group .text {
     width:500px;
+}
+
+.text-break {
+    width: 20em; 
+    word-wrap: break-word;
 }
 
 @media (max-width: 768px) {
