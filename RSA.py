@@ -162,6 +162,7 @@ def encrypt_rsa(msg, n):
     global public_key
     global encrypted_msg
     key = public_key
+    #encrypted_msg.append(0);
     i = 0
     encrypted = ""
     while(i < len(msg)):
@@ -203,8 +204,8 @@ def decrypt_rsa(n):
     return decrypted
 
 if __name__ == '__main__':
-    original_message = raw_input("Message: ")
-    key_length = int(raw_input("Key length: "))
+    original_message = input("Message: ")
+    key_length = int(input("Key length: "))
     seed = intercambia(original_message)
     execute(original_message, Charset, seed, key_length)
 
@@ -212,7 +213,5 @@ if __name__ == '__main__':
     print ("Encrypted message: ", encrypted_message)
     print ("Decrypted message: ", decrypted_message)
     print ("Deciphered message: ", deciphered_message)
-    print ("Private key: ", private_key)
-    print ("Public key: ", public_key)
-
-
+    print ("Clave privada: ", private_key)
+    print ("Clave publica: ", public_key)
