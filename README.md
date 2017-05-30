@@ -1,5 +1,5 @@
 
-![alt text](https://github.com/AxelJunes/RSA_Encrypter/blob/master/static/img/logo.png)
+![alt text](https://github.com/AxelJunes/RSA_Encrypter/blob/master/Flask/static/img/logo.png)
 
 
 
