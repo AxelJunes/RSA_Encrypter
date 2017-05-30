@@ -16,9 +16,11 @@
         <h2>Encrypted message: </h2>
         <h4 class="text-break">{{ encrypted }}</h4>
         <br>
-        <form id="target" action="/decrypt" method="post">
+        <form action="/decrypt" method="POST">
+          <input type="hidden" name="decrypt" value="{{decrypted}}">
+          <input type="hidden" name="deciph" value="{{deciphered}}">
           <div class="form-group">
-            <input class="btn btn-danger btn-lg" type = "submit" value="Decrypt">
+            <input class="btn btn-danger btn-lg" type="submit" value="Decrypt">
           </div>
         </form>
       </div>
