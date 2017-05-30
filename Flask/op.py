@@ -77,7 +77,7 @@ class OP(object):
         c = 0
         while n < len(self.msg):
             if self.charset.index(self.msg[n]) != -1:
-                tmp = (self.charset.index(self.msg[n]) + self.charset.index(self.seed[n])) % len(self.charset)
+                tmp = (self.charset.index(self.msg[n]) + self.charset.index(self.seed[c])) % len(self.charset)
                 cifrado = cifrado + self.charset[tmp]
             else:
                 c -= 1
@@ -95,7 +95,7 @@ class OP(object):
         c = 0
         while m < len(cifrado):
             if self.charset.index(cifrado[m]) != -1:
-                tmp = (self.charset.index(cifrado[m]) - self.charset.index(self.seed[m])) % len(self.charset)
+                tmp = (self.charset.index(cifrado[m]) - self.charset.index(self.seed[c])) % len(self.charset)
                 if tmp < 0:
                     tmp = tmp + len(self.charset)
                 descifrado = descifrado + self.charset[tmp]
